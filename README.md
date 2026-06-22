@@ -1,19 +1,7 @@
-# Movie Recommender System
-
-This project implements a collaborative filtering-based movie recommender system using Singular Value Decomposition (SVD). The model is built and evaluated in the `main.ipynb` Jupyter Notebook.
-
 ## Project Overview
 
 The recommender system learns latent features for users and movies from the MovieLens dataset. It can provide personalized movie recommendations for both existing users in the dataset and new users based on a small number of initial ratings (a "cold start" scenario).
 
-### Key Features
-- **Data Processing**: Loads and processes the MovieLens dataset (`ml-32m`) into a sparse user-item rating matrix.
-- **SVD Model**: Uses Truncated SVD to decompose the ratings matrix and generate user and movie embeddings.
-- **Recommendation**: 
-    - Recommends movies for existing users.
-    - Handles the "cold start" problem by recommending movies to new users based on their initial ratings.
-- **Evaluation**: The model's performance is evaluated by plotting the singular values, cumulative explained variance, and calculating the Root Mean Squared Error (RMSE) for different numbers of latent factors (k).
-- **Model Export**: The trained movie embeddings are saved to `recommender_model.npz` for later use.
 
 ## Model Evaluation
 
@@ -31,11 +19,9 @@ $X_{centered} \approx U_k \Sigma_k V_k^T$
 
 The predicted rating for a user $u$ and movie $i$ is calculated by taking the dot product of the user's and movie's latent feature vectors and adding back the user's mean rating $\mu_u$:
 
-$\hat{r}_{ui} = (U_k \cdot \sqrt{\Sigma_k})_u \cdot (V_k^T \cdot \sqrt{\Sigma_k})_i^T + \mu_u$
-
-### Explained Variance
-
-To understand the contribution of each latent factor, the explained variance is plotted. This helps in choosing an appropriate value for $k$ (the number of components).
+$\hat{r}_{ui} = (U_k \cdot \sqrt{\Sigma_k})_u \cdot (V_k^T \cdot \sqrt{\Sigma_k})_i^T + \mu_u$<br>
+or <br>
+$\hat{r}_{u} = (U_k {\Sigma_k} V_k^T) + \mu$
 
 ### Root Mean Squared Error (RMSE)
 
@@ -47,19 +33,18 @@ The notebook evaluates and plots the RMSE for different values of $k$ to find th
 
 ### Cold Start Recommendations
 
-For new users who are not in the original dataset, a "cold start" recommendation is provided. Given a set of initial ratings from a new user, a new user preference vector $p_{new}$ is computed:
+Given a set of initial ratings from a new user, a new user preference vector $p_{new}$ is computed:
 
-$p_{new} = \sum_{i \in I_{rated}} (r_i - \mu_{new}) \cdot V_k(i)$
+$p_{new}  = (r - \mu_{new})V_{k}$ 
+- r is the vector made by new user's rating for each movie
 
-where:
-- $I_{rated}$ is the set of movies rated by the new user.
-- $r_i$ is the rating for movie $i$.
-- $\mu_{new}$ is the mean of the new user's ratings.
-- $V_k(i)$ is the embedding for movie $i$.
 
+it transforms the vector made my user's rating to movie embeded latent space
 The predicted scores for all movies are then:
 
-$Scores = p_{new} \cdot V_k^T + \mu_{new}$
+$Scores = p_{new} \cdot V_k^T + \mu_{new}$<br>
+it transforms back movie space to user space
+
 
 Movies with the highest scores (that the user hasn't already rated) are recommended.
 
